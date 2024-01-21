@@ -1,0 +1,326 @@
+{% extends 'admin/master.html' %}
+
+{% block main_content %}
+    <div id="user-app" class="container-fluid">
+        <div v-if="successMessage" class="alert alert-success" role="alert">
+            [[ successMessage ]]
+        </div>
+        <div v-if="deleteSuccessMessage" class="alert alert-success" role="alert">
+            [[ deleteSuccessMessage ]]
+        </div>
+        <div v-if="editSuccessMessage" class="alert alert-success" role="alert">
+            [[ editSuccessMessage ]]
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="m-0">
+                                    <i class="fas fa-user"></i>
+                                    User list
+                                </h5>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-success float-right" data-toggle="modal"
+                                        data-target="#adduser">
+                                    Add User
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless table-striped">
+                                <thead>
+                                <tr class="bg-primary">
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Image</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-if="userList.length === 0">
+                                    <td colspan="5" class="text-center">
+                                        <span style="color: #cccc">No records...</span>
+                                    </td>
+                                </tr>
+                                <tr v-for="(user, index) in userList" :key="user.id">
+                                    <td>[[ user.id ]]</td>
+                                    <td>[[ user.name ]]</td>
+                                    <td>[[ user.image ]]</td>
+                                    <td>[[ user.status ]]</td>
+                                    <td class="d-flex" style="gap: 10px">
+                                        <button type="button"
+                                                @click="getUserName(user.id, user.name, user.image, user.status)"
+                                                class="btn btn-outline-secondary"
+                                                data-toggle="modal"
+                                                data-target="#edituser">
+                                            Edit
+                                            <i class="far fa-edit"></i>
+                                        </button>
+                                        <button type="button" @click="deleteUser(user.id)"
+                                                class="btn btn-outline-danger"
+                                                data-toggle="modal"
+                                                data-target="#deleteuser">
+                                            Delete
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Add User -->
+        <div class="modal fade" id="adduser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form @submit.prevent="addUser">
+                        <div class="modal-body">
+                            <!-- Your form fields for adding a user -->
+                            <div class="form-group">
+                                <label for="userName">Name <span class="text-danger">*</span></label>
+                                <input type="text" v-model="userName" name="userName" class="form-control"
+                                       id="userName" placeholder="Enter user name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="userImage">Image</label>
+                                <input type="text" v-model="userImage" name="userImage" class="form-control"
+                                       id="userImage" placeholder="Enter image URL">
+                            </div>
+                            <div class="form-group">
+                                <label for="userStatus">Status</label>
+                                <input type="text" v-model="userStatus" name="userStatus" class="form-control"
+                                       id="userStatus" placeholder="Enter user status">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+
+        <!-- Modal Edit User -->
+        <div class="modal fade" id="edituser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form @submit.prevent="editUser">
+                        <div class="modal-body">
+                            <!-- Your form fields for editing a user -->
+                            <div class="form-group">
+                                <label for="editName">Name <span class="text-danger">*</span></label>
+                                <input type="text" v-model="userName" name="editName" class="form-control"
+                                       id="editName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editImage">Image</label>
+                                <input type="text" v-model="userImage" name="editImage" class="form-control"
+                                       id="editImage">
+                            </div>
+                            <div class="form-group">
+                                <label for="editStatus">Status</label>
+                                <input type="text" v-model="userStatus" name="editStatus" class="form-control"
+                                       id="editStatus">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+
+        <!-- Modal Delete User -->
+        <div class="modal fade" id="deleteuser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this user?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" @click="deleteUserConfirm" class="close"
+                                data-dismiss="modal">Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+    </div>
+    <script>
+        var userVueObj = new Vue({
+            el: '#user-app',
+            delimiters: ['[[', ']]'],
+            data: {
+                userList: [],
+                successMessage: '',
+                deleteSuccessMessage: '',
+                editSuccessMessage: '',
+                userId: 0,
+                userName: "",
+                userImage: "",
+                userStatus: "",
+            },
+            methods: {
+                getAllUsers() {
+                    axios.get('http://127.0.0.1:5000/api/user')
+                        .then(response => {
+                            this.userList = response.data;
+                            console.log(this.userList);  // Add this line to log user list
+                        })
+                        .catch(error => {
+                            console.error('Error fetching user data:', error);
+                        });
+                },
+
+                getUserName(id, name, image, status) {
+                    this.userId = id;
+                    this.userName = name;
+                    this.userImage = image;
+                    this.userStatus = status;
+                },
+                addUser(e) {
+                    e.preventDefault();
+
+                    axios.post('http://127.0.0.1:5000/api/user', {
+                        "name": this.userName,
+                        "image": this.userImage,
+                        "status": this.userStatus,
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.data.success) {
+                                $('#adduser').modal('hide');
+                                // Update userList without refreshing the page
+                                this.userList.push(response.data.user);
+                                this.successMessage = 'User has been added successfully!';
+                                this.userName = '';
+                                this.userImage = '';
+                                this.userStatus = '';
+                                setTimeout(() => {
+                                    this.clearSuccessMessage();
+                                }, 3000);
+                            } else {
+                                alert('Failed to add user: ' + response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('An error occurred while adding the user.');
+                            console.error(error);
+                        });
+                },
+
+                getID(id) {
+
+                    this.userId = id
+                },
+                clearSuccessMessage() {
+                    this.successMessage = '';
+                    this.deleteSuccessMessage = '';
+                    this.editSuccessMessage = '';
+                },
+                deleteUser(id) {
+                    this.userId = id;
+                },
+                deleteUserConfirm() {
+                    axios.delete(`http://127.0.0.1:5000/api/user/${this.userId}`)
+                        .then(response => {
+                            if (response.data.success) {
+                                $('#deleteuser').modal('hide');
+                                this.getAllUsers();
+                                this.deleteSuccessMessage = 'User deleted successfully';
+                                setTimeout(() => {
+                                    this.clearSuccessMessage();
+                                }, 3000);
+                            } else {
+                                console.error('Error deleting user:', response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Unexpected error:', error);
+                        });
+                },
+
+                editUser() {
+                    axios.put(`http://127.0.0.1:5000/api/user/${this.userId}`, {
+                        "name": this.userName,
+                        "image": this.userImage,
+                        "status": this.userStatus
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.data.success) {
+                                $('#edituser').modal('hide');
+                                this.successMessage = 'User edited successfully';
+                                this.getAllUsers();
+                                this.userName = '';
+                                this.userImage = '';
+                                this.userStatus = '';
+                                setTimeout(() => {
+                                    this.clearSuccessMessage();
+                                }, 3000);
+                            } else {
+                                alert('Failed to edit user: ' + response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('An error occurred while editing the user.');
+                            console.error(error);
+                        });
+                },
+
+            },
+            created() {
+                this.getAllUsers();  // Call the method when the component is created
+            },
+            mounted() {
+                this.getAllUsers();
+            }
+        });
+    </script>
+
+{% endblock %}

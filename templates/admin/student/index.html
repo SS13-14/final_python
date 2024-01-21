@@ -1,0 +1,204 @@
+{% extends 'admin/master.html' %}
+{% block main_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="m-0">
+                                    <i class="fas fa-user-graduate"></i>
+                                    Student list
+                                </h5>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('addStudent') }}"
+                                   class="btn btn-outline-success float-right"
+                                   role="button"
+                                   aria-disabled="true"
+                                   data-bs-toggle="modal"
+                                data-bs-target="#addstudentForm"
+                                >
+                                <i class="fas fa-plus-circle"></i>
+                                Add Student
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless table-striped">
+                                <thead>
+                                <tr class="bg-primary">
+                                    <th>ID</th>
+                                    <th>Profile</th>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Address</th>
+                                    <th>DOB</th>
+                                    <th>POB</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {#                                {% for item in rows(10) %}#}
+                                {% for row in rows %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>Profile</td>
+                                        <td>{{ row['name'] }}</td>
+                                        <td>{{ row['gender'] }}</td>
+
+                                        <td>{{ row['address'] }}</td>
+                                        <td>{{ row['DateOfBirth'] }}</td>
+                                        <td>{{ row['PlaceOfBirth'] }}</td>
+                                        <td>
+                                            <a href="{{ BASE_URL }}/admin/edit_student/{{ row['name'] }}">
+                                                <button type="button" class="btn btn-outline-secondary ml-1 mr-1">
+                                                    Edit
+                                                    <i class="far fa-edit"></i>
+                                                </button>
+                                            </a>
+                                            <a href="{{ url_for('deleteStudent', id=row['id']) }}"
+                                               class="btn btn-outline-danger delete-button" data-bs-toggle="modal"
+                                               data-bs-target="#deleteConfirmationModal"
+                                               data-student-id="{{ row['id'] }}">Delete
+                                                &nbsp;<i class="far fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add New Slideshow Modal !-->
+    <form action="{{ url_for('insertStudent') }}" method="post" enctype="multipart/form-data">
+        <div class="modal fade" id="addstudentForm" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="Label">Add Student Form</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="exampleInputName">Name <span class="text-danger">*</span></label>
+                            <input
+                                    required
+                                    type="text"
+                                    class="form-control"
+                                    id="exampleInputName"
+                                    name="name"
+                                    placeholder="Enter you name"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputName">Gender <span class="text-danger">*</span></label>
+                            <select
+                                    required
+                                    class="form-control"
+                                    id="exampleInputName"
+                                    name="gender"
+                            >
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputName">Address <span class="text-danger">*</span></label>
+                            <textarea
+                                    rows="5"
+                                    class="form-control"
+                                    id="exampleInputName"
+                                    name="address"
+                            >
+
+                                        </textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputName">Date Of Birth <span class="text-danger">*</span></label>
+                            <input
+                                    required
+                                    type="Date"
+                                    class="form-control"
+                                    id="exampleInputName"
+                                    name="dob"
+                                    placeholder="Enter your Date Of Birth"
+
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputName">Place Of Birth <span class="text-danger">*</span></label>
+                            <input
+                                    required
+                                    class="form-control"
+                                    id="exampleInputName"
+                                    name="pob"
+                                    placeholder="Enter your Place Of Birth "
+
+                            >
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary float-right">Submit</button>
+                        <button type="reset" class="btn btn-danger">Reset</button>
+                        [[
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- End New Slideshow Modal!-->
+    {#    end#}
+    {#    modal delete#}
+    <div class="modal fade" id="deleteConfirmationModal" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteConfirmationModalLabel"><i class="fas fa-user-graduate"></i>
+                        &nbsp;Delete Student</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="text-danger">Are you sure you want to remove this student?</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" id="confirmDelete">Yes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#    script#}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.delete-button');
+            const confirmDeleteButton = document.getElementById('confirmDelete');
+            let deleteUrl;
+            let studentIdToDelete;
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    deleteUrl = this.getAttribute('href'); // Get the URL from the button's href attribute
+                    studentIdToDelete = this.getAttribute('data-student-id'); // Get the student's ID
+                });
+            });
+            confirmDeleteButton.addEventListener('click', function () {
+                if (deleteUrl) {
+                    const deleteRequestUrl = `${deleteUrl}`;
+                    window.location.href = deleteRequestUrl;
+                }
+            });
+        });
+    </script>
+{% endblock %}
